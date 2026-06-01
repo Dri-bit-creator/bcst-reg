@@ -1,0 +1,58 @@
+:root {
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  /* Green brand scale (BCST) */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+  --color-primary-950: #022c22;
+
+  /* Warm accent (subtle highlights only) */
+  --color-accent-400: #fbbf24;
+  --color-accent-500: #f59e0b;
+  --color-accent-600: #d97706;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+
+  --color-success: #15803d;
+  --color-success-bg: #dcfce7;
+  --color-warning: #a16207;
+  --color-warning-bg: #fef9c3;
+  --color-danger: #b91c1c;
+  --color-danger-bg: #fee2e2;
+  --color-info: #047857;
+  --color-info-bg: #d1fae5;
+
+  --color-page-bg: #f0fdf4;
+  --color-sidebar-from: #065f46;
+  --color-sidebar-to: #022c22;
+
+  --sidebar-width: 260px;
+  --topbar-height: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(6, 78, 59, 0.06);
+  --shadow-md: 0 4px 12px rgba(6, 78, 59, 0.1);
+  --shadow-lg: 0 12px 32px rgba(6, 78, 59, 0.14);
+  --shadow-green: 0 4px 14px rgba(5, 150, 105, 0.35);
+
+  --transition: 0.2s ease;
+}
