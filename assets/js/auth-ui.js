@@ -47,11 +47,16 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
     const confirm = form.querySelector('#confirm_password').value;
     if (password !== confirm) { showFlashById(flashId, 'Passwords do not match.', 'error'); return; }
     try {
+      console.log('Attempting to create user with email:', email);
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
+      console.log('User created:', userCred.user && userCred.user.uid);
+      console.log('Writing user doc to Firestore for uid:', userCred.user.uid);
       await setDoc(doc(db, 'users', userCred.user.uid), { name, email, role: 'user' });
+      console.log('User document written successfully.');
       showFlashById(flashId, 'Account created. Redirecting to login...', 'success');
       setTimeout(() => window.location.href = redirect, 1200);
     } catch (err) {
+      console.error('Registration error:', err);
       showFlashById(flashId, err.message || 'Registration failed', 'error');
     }
   });
