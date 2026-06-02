@@ -23,20 +23,29 @@ export let serverTimestamp = null;
 // Promise that resolves when Firebase SDK is loaded and initialized.
 export const firebaseReady = (async function loadFirebase() {
 	const cdnVersions = ['9.24.0', '9.23.0', '9.22.0', '9.21.0'];
+	const cdnBases = [
+		(v) => `https://www.gstatic.com/firebasejs/${v}/`,
+		(v) => `https://cdn.jsdelivr.net/npm/firebase@${v}/`,
+	];
+
 	let appModule, authModule, firestoreModule, versionUsed = null;
 
 	for (const v of cdnVersions) {
-		const base = `https://www.gstatic.com/firebasejs/${v}/`;
-		try {
-			appModule = await import(`${base}firebase-app.js`);
-			authModule = await import(`${base}firebase-auth.js`);
-			firestoreModule = await import(`${base}firebase-firestore.js`);
-			versionUsed = v;
-			console.log('Loaded Firebase SDK from CDN version', v);
-			break;
-		} catch (err) {
-			console.warn('Failed to load Firebase SDK from CDN version', v, err && err.message);
+		for (const baseFn of cdnBases) {
+			const base = baseFn(v);
+			try {
+				console.log('Attempting to load Firebase SDK from', base);
+				appModule = await import(`${base}firebase-app.js`);
+				authModule = await import(`${base}firebase-auth.js`);
+				firestoreModule = await import(`${base}firebase-firestore.js`);
+				versionUsed = `${v} @ ${base}`;
+				console.log('Loaded Firebase SDK from', versionUsed);
+				break;
+			} catch (err) {
+				console.warn('Failed to load Firebase SDK from', base, err && err.message);
+			}
 		}
+		if (appModule) break;
 	}
 
 	if (!appModule) {

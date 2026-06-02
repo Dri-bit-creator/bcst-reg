@@ -78,19 +78,28 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
           console.warn('Error while waiting for auth state:', waitErr);
         }
 
-        try {
-          await setDoc(doc(db, 'users', userCred.user.uid), {
+          const userDocData = {
             name,
             email,
             password: passwordHash,
             role: 'user',
             created_at: serverTimestamp()
-          });
-        } catch (writeErr) {
-          console.error('Failed to write user document:', writeErr);
-          // Re-throw so outer catch will show a flash message
-          throw writeErr;
-        }
+          };
+          console.log('Writing user document for uid', userCred.user.uid, 'data:', userDocData);
+          try {
+            await setDoc(doc(db, 'users', userCred.user.uid), userDocData);
+            console.log('setDoc resolved for uid', userCred.user.uid);
+            try {
+              const readBack = await getDoc(doc(db, 'users', userCred.user.uid));
+              console.log('Read back user doc:', readBack.exists() ? readBack.data() : null);
+            } catch (readErr) {
+              console.warn('Failed to read back user doc after setDoc:', readErr);
+            }
+          } catch (writeErr) {
+            console.error('Failed to write user document:', writeErr);
+            // Re-throw so outer catch will show a flash message
+            throw writeErr;
+          }
         console.log('User document written successfully.');
         showFlashById(flashId, 'Account created. Redirecting to login...', 'success');
         setTimeout(() => window.location.href = redirect, 1200);
