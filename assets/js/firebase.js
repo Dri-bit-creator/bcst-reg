@@ -1,7 +1,7 @@
 import { firebaseConfig } from './firebase-config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js';
 import { getAuth, createUserWithEmailAndPassword as _createUserWithEmailAndPassword, signInWithEmailAndPassword as _signInWithEmailAndPassword, signOut as _signOut, onAuthStateChanged as _onAuthStateChanged, sendPasswordResetEmail as _sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js';
-import { getFirestore, doc as _doc, setDoc as _setDoc, getDoc as _getDoc, addDoc as _addDoc, collection as _collection, getDocs as _getDocs, updateDoc as _updateDoc, query as _query, where as _where, orderBy as _orderBy } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
+import { getFirestore, doc as _doc, setDoc as _setDoc, getDoc as _getDoc, addDoc as _addDoc, collection as _collection, getDocs as _getDocs, updateDoc as _updateDoc, query as _query, where as _where, orderBy as _orderBy, serverTimestamp as _serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-firestore.js';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -22,4 +22,5 @@ export const updateDoc = _updateDoc;
 export const query = _query;
 export const where = _where;
 export const orderBy = _orderBy;
+export const serverTimestamp = _serverTimestamp;
 export { auth, db };

@@ -1,4 +1,4 @@
-import { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, doc, setDoc, getDoc } from './firebase.js';
+import { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, doc, setDoc, getDoc, serverTimestamp } from './firebase.js';
 
 function showFlashById(id, message, type = 'info') {
   const el = document.getElementById(id);
@@ -48,10 +48,18 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
     if (password !== confirm) { showFlashById(flashId, 'Passwords do not match.', 'error'); return; }
     try {
       console.log('Attempting to create user with email:', email);
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      console.log('User created:', userCred.user && userCred.user.uid);
-      console.log('Writing user doc to Firestore for uid:', userCred.user.uid);
-      await setDoc(doc(db, 'users', userCred.user.uid), { name, email, role: 'user' });
+        const userCred = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User created:', userCred.user && userCred.user.uid);
+        console.log('Writing user doc to Firestore for uid:', userCred.user.uid);
+        // Hash the password client-side before writing to Firestore (do not store plaintext)
+        const passwordHash = await hashPassword(password);
+        await setDoc(doc(db, 'users', userCred.user.uid), {
+          name,
+          email,
+          password: passwordHash,
+          role: 'user',
+          created_at: serverTimestamp()
+        });
       console.log('User document written successfully.');
       showFlashById(flashId, 'Account created. Redirecting to login...', 'success');
       setTimeout(() => window.location.href = redirect, 1200);
@@ -60,6 +68,15 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
       showFlashById(flashId, err.message || 'Registration failed', 'error');
     }
   });
+}
+
+// Simple SHA-256 hash helper using Web Crypto API
+async function hashPassword(password) {
+  const enc = new TextEncoder();
+  const data = enc.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
 function enablePasswordToggles(form) {
