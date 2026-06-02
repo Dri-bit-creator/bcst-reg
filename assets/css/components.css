@@ -321,3 +321,23 @@
     max-width: none;
   }
 }
+
+/* Password toggle */
+.form-field.has-toggle { position: relative; }
+.form-field.has-toggle input { padding-right: 2.5rem; }
+.password-toggle {
+  position: absolute;
+  right: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-slate-500);
+}
+.password-toggle:focus { outline: none; box-shadow: 0 0 0 3px rgba(16,185,129,0.12); border-radius: 6px; }
+.password-toggle svg { width: 1.25rem; height: 1.25rem; }

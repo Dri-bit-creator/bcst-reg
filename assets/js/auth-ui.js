@@ -10,6 +10,7 @@ function showFlashById(id, message, type = 'info') {
 export function initAuthUI({ formId, redirectOnAdmin = '../admin/dashboard.html', redirectOnUser = 'userdash.html', flashId = 'flash' } = {}) {
   const form = document.getElementById(formId);
   if (!form) return;
+  enablePasswordToggles(form);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = form.querySelector('#email').value.trim();
@@ -37,6 +38,7 @@ export function initAuthUI({ formId, redirectOnAdmin = '../admin/dashboard.html'
 export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' } = {}) {
   const form = document.getElementById(formId);
   if (!form) return;
+  enablePasswordToggles(form);
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = form.querySelector('#name').value.trim();
@@ -52,6 +54,52 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
     } catch (err) {
       showFlashById(flashId, err.message || 'Registration failed', 'error');
     }
+  });
+}
+
+function enablePasswordToggles(form) {
+  const pwInputs = form.querySelectorAll('input[type="password"]');
+  if (!pwInputs || pwInputs.length === 0) return;
+  pwInputs.forEach((input) => {
+    const field = input.closest('.form-field') || input.parentElement;
+    if (!field) return;
+    field.classList.add('has-toggle');
+
+    // Avoid adding multiple toggles
+    if (field.querySelector('.password-toggle')) return;
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'password-toggle';
+    btn.setAttribute('aria-label', 'Show password');
+    btn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+
+    btn.addEventListener('click', () => {
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+      // swap icon
+      btn.innerHTML = isPassword ? `
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10.58 10.58A3 3 0 0113.42 13.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.5 12s3.5-6.5 9.5-6.5c2.02 0 3.9.5 5.42 1.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M21.5 12s-1.86 3.45-5.1 4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      ` : `
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      `;
+    });
+
+    field.appendChild(btn);
   });
 }
 
