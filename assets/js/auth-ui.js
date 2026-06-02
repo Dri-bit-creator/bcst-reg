@@ -1,4 +1,4 @@
-import { firebaseReady, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, doc, setDoc, getDoc, serverTimestamp } from './firebase.js';
+import { firebaseReady, auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail, doc, setDoc, getDoc, serverTimestamp, GoogleAuthProvider, signInWithPopup } from './firebase.js';
 
 function showFlashById(id, message, type = 'info') {
   const el = document.getElementById(id);
@@ -14,6 +14,37 @@ export function initAuthUI({ formId, redirectOnAdmin = '../admin/dashboard.html'
 
   // Wait for Firebase SDK to be ready before attaching auth listeners.
   firebaseReady.then(() => {
+    // Attach Google sign-in buttons on this page
+    const googleButtons = document.querySelectorAll('[data-google-signin]');
+    googleButtons.forEach((btn) => {
+      btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        try {
+          const provider = new GoogleAuthProvider();
+          const userCred = await signInWithPopup(auth, provider);
+          const user = userCred.user;
+          // ensure user doc
+          const existing = await getDoc(doc(db, 'users', user.uid));
+          if (!existing.exists()) {
+            await setDoc(doc(db, 'users', user.uid), {
+              name: user.displayName || '',
+              email: user.email || '',
+              password: '',
+              role: 'user',
+              created_at: serverTimestamp()
+            });
+          }
+          const finalDoc = await getDoc(doc(db, 'users', user.uid));
+          const role = finalDoc.exists() ? (finalDoc.data().role || 'user') : 'user';
+          if (role === 'admin') window.location.href = redirectOnAdmin;
+          else window.location.href = redirectOnUser;
+        } catch (err) {
+          console.error('Google sign-in error:', err);
+          showFlashById(flashId, err.message || 'Google sign-in failed', 'error');
+        }
+      });
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = form.querySelector('#email').value.trim();
@@ -48,6 +79,36 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
   enablePasswordToggles(form);
 
   firebaseReady.then(() => {
+    // Attach Google sign-in buttons on this page (signup can also sign-in with Google)
+    const googleButtons = document.querySelectorAll('[data-google-signin]');
+    googleButtons.forEach((btn) => {
+      btn.addEventListener('click', async (ev) => {
+        ev.preventDefault();
+        try {
+          const provider = new GoogleAuthProvider();
+          const userCred = await signInWithPopup(auth, provider);
+          const user = userCred.user;
+          const existing = await getDoc(doc(db, 'users', user.uid));
+          if (!existing.exists()) {
+            await setDoc(doc(db, 'users', user.uid), {
+              name: user.displayName || '',
+              email: user.email || '',
+              password: '',
+              role: 'user',
+              created_at: serverTimestamp()
+            });
+          }
+          const finalDoc = await getDoc(doc(db, 'users', user.uid));
+          const role = finalDoc.exists() ? (finalDoc.data().role || 'user') : 'user';
+          if (role === 'admin') window.location.href = '../admin/dashboard.html';
+          else window.location.href = 'userdash.html';
+        } catch (err) {
+          console.error('Google sign-in error:', err);
+          showFlashById(flashId, err.message || 'Google sign-in failed', 'error');
+        }
+      });
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = form.querySelector('#name').value.trim();
