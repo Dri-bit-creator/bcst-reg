@@ -62,6 +62,13 @@ export function initAuthUI({ formId, redirectOnAdmin = '../admin/dashboard.html'
 
     onAuthStateChanged(auth, async (user) => {
       if (!user) return;
+      // If the login form is present, don't auto-redirect — allow the page to show
+      // the login UI even when an auth session exists. Explicit sign-in handlers
+      // (form submit / Google sign-in) still perform their own redirects.
+      if (form && document.body.contains(form)) {
+        console.log('initAuthUI: skipping auto-redirect while login form is present.');
+        return;
+      }
       const udoc = await getDoc(doc(db, 'users', user.uid));
       const role = udoc.exists() ? (udoc.data().role || 'user') : 'user';
       if (role === 'admin') window.location.href = redirectOnAdmin;
