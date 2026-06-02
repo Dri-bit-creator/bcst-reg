@@ -49,17 +49,26 @@ export const firebaseReady = (async function loadFirebase() {
 	}
 
 	if (!appModule) {
-		// Try local vendor files
-		const localBase = new URL('./vendor/', import.meta.url).href;
-		try {
-			appModule = await import(`${localBase}firebase-app.js`);
-			authModule = await import(`${localBase}firebase-auth.js`);
-			firestoreModule = await import(`${localBase}firebase-firestore.js`);
-			versionUsed = 'local';
-			console.log('Loaded Firebase SDK from local vendor');
-		} catch (err) {
-			console.error('Failed to load Firebase SDK from CDN and local vendor', err && err.message);
-			throw err;
+		// Try local vendor folder then current directory (assets/js/vendor/ then assets/js/)
+		const localBases = [new URL('./vendor/', import.meta.url).href, new URL('./', import.meta.url).href];
+		let localLoaded = false;
+		for (const lb of localBases) {
+			try {
+				console.log('Attempting to load Firebase SDK from local path', lb);
+				appModule = await import(`${lb}firebase-app.js`);
+				authModule = await import(`${lb}firebase-auth.js`);
+				firestoreModule = await import(`${lb}firebase-firestore.js`);
+				versionUsed = `local @ ${lb}`;
+				console.log('Loaded Firebase SDK from', versionUsed);
+				localLoaded = true;
+				break;
+			} catch (err) {
+				console.warn('Failed to load Firebase SDK from local path', lb, err && err.message);
+			}
+		}
+		if (!localLoaded) {
+			console.error('Failed to load Firebase SDK from CDN and local paths');
+			throw new Error('Firebase SDK not found (CDN and local paths failed)');
 		}
 	}
 
