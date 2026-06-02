@@ -51,7 +51,13 @@
             </select>
           </div>
           <div class="form-field"><label for="year_level">Year level</label><input type="text" id="year_level" name="year_level" required></div>
-          <div class="form-field"><label for="section">Section</label><input type="text" id="section" name="section" required></div>
+          <div class="form-field"><label for="section">Section</label>
+            <select id="section" name="section" required>
+              <option value="" disabled selected>Select section</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+            </select>
+          </div>
           <div class="form-field"><label for="semester">Semester</label><input type="text" id="semester" name="semester" required></div>
 
           <p class="form-field form-field--full section-title" style="margin:0;">Personal details</p>
@@ -62,7 +68,7 @@
           <div class="form-field"><label for="civil_status">Civil status</label><select id="civil_status" name="civil_status" required><option value="" disabled selected>Select status</option><option value="single">Single</option><option value="married">Married</option><option value="widowed">Widowed</option></select></div>
           <div class="form-field"><label for="dob">Date of birth</label><input type="date" id="dob" name="dob" required></div>
           <div class="form-field"><label for="pob">Place of birth</label><input type="text" id="pob" name="pob" required></div>
-          <div class="form-field"><label for="contact_number">Contact number</label><input type="tel" id="contact_number" name="contact_number" required pattern="[0-9+()\-\s]*"></div>
+          <div class="form-field"><label for="contact_number">Contact number</label><input type="tel" id="contact_number" name="contact_number" required maxlength="11" inputmode="numeric" pattern="[0-9]{11}" title="Enter an 11-digit number (digits only)"></div>
           <div class="form-field"><label for="religion">Religion</label><input type="text" id="religion" name="religion" required></div>
 
           <p class="form-field form-field--full section-title" style="margin:0;">Family &amp; address</p>
@@ -131,6 +137,11 @@
       for (const r of required) {
         if (!data[r]) { showFlash('Please fill in all required fields.', 'warning'); return; }
       }
+
+      // Normalize and validate contact number: remove non-digits and require exactly 11 digits
+      const cleanedPhone = (data.contact_number || '').replace(/\D/g, '');
+      if (!/^\d{11}$/.test(cleanedPhone)) { showFlash('Contact number must be 11 digits (digits only).', 'warning'); return; }
+      data.contact_number = cleanedPhone;
 
       // Attach owner UID and timestamp
       data.owner = currentUser.uid;

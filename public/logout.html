@@ -8,11 +8,32 @@
 </head>
 <body class="auth-page">
   <main style="padding:2rem;">
-    <p>Signing out…</p>
+    <div class="logout-center" style="min-height:60vh; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+      <div id="logout-spinner" aria-hidden="true" style="width:48px;height:48px;border:5px solid rgba(0,0,0,0.08);border-top-color:#1f8ef1;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:12px;"></div>
+      <p id="logout-message">Signing out…</p>
+      <p style="font-size:90%; color:#666; margin-top:8px;">If you are not redirected automatically, <a id="manual-link" href="login.html">go to login</a>.</p>
+    </div>
   </main>
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
   <script type="module">
     import { signOutAndRedirect } from '../assets/js/auth-ui.js';
-    signOutAndRedirect('login.html');
+
+    // How long to wait for signOut to complete before falling back (ms)
+    const SIGNOUT_TIMEOUT_MS = 5000; // X milliseconds, change as needed
+
+    // Show spinner is already in markup. Start sign-out and wait up to SIGNOUT_TIMEOUT_MS.
+    // The function will redirect when done or after timeout.
+    signOutAndRedirect('login.html', { wait: true, timeout: SIGNOUT_TIMEOUT_MS });
+
+    // Fallback safety redirect in case the function fails or environment prevents navigation
+    const fallbackTimer = setTimeout(() => {
+      window.location.href = 'login.html';
+    }, SIGNOUT_TIMEOUT_MS + 300);
+
+    // If user clicks the manual link, clear fallback (navigation will occur)
+    document.getElementById('manual-link').addEventListener('click', () => { clearTimeout(fallbackTimer); });
   </script>
 </body>
 </html>

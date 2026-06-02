@@ -263,9 +263,35 @@ export function requireAuth({ requireAdmin = false, redirectTo = '../public/logi
   });
 }
 
-export async function signOutAndRedirect(redirectTo = 'login.html') {
-  await signOut(auth);
-  window.location.href = redirectTo;
+export async function signOutAndRedirect(redirectTo = 'login.html', { wait = false, timeout = 500 } = {}) {
+  try {
+    // If signOut is not yet available because the SDK is still loading, wait briefly for firebaseReady.
+    if (typeof signOut !== 'function') {
+      try {
+        await Promise.race([firebaseReady, new Promise((res) => setTimeout(res, timeout))]);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    if (typeof signOut === 'function') {
+      const p = signOut(auth);
+      if (wait) {
+        // Wait either for signOut to complete or the timeout to elapse
+        await Promise.race([p, new Promise((res) => setTimeout(res, timeout))]);
+      } else {
+        // Fire-and-forget: don't block UI navigation on signOut network work
+        p.catch((err) => console.warn('signOut error (background):', err));
+      }
+    } else {
+      console.warn('signOut function not available, proceeding to redirect');
+    }
+  } catch (err) {
+    console.warn('signOutAndRedirect error:', err);
+  } finally {
+    // Redirect immediately so the user sees the login page without delay
+    window.location.href = redirectTo;
+  }
 }
 
 export async function sendReset(email) {
