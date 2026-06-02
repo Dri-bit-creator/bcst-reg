@@ -81,14 +81,31 @@ async function hashPassword(password) {
 
 function enablePasswordToggles(form) {
   const pwInputs = form.querySelectorAll('input[type="password"]');
+  console.log('enablePasswordToggles: found', pwInputs.length, 'password inputs');
   if (!pwInputs || pwInputs.length === 0) return;
   pwInputs.forEach((input) => {
     const field = input.closest('.form-field') || input.parentElement;
     if (!field) return;
     field.classList.add('has-toggle');
 
+    // If input already wrapped, ensure field has class and skip
+    if (input.parentElement && input.parentElement.classList && input.parentElement.classList.contains('input-with-toggle')) {
+      if (!input.parentElement.querySelector('.password-toggle')) {
+        // add button if missing
+      } else return;
+    }
+
+    // Wrap the input in a positioned container so the toggle aligns with the input
+    if (!(input.parentElement && input.parentElement.classList && input.parentElement.classList.contains('input-with-toggle'))) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'input-with-toggle';
+      input.parentNode.insertBefore(wrapper, input);
+      wrapper.appendChild(input);
+    }
+
+    const wrapper = input.parentElement;
     // Avoid adding multiple toggles
-    if (field.querySelector('.password-toggle')) return;
+    if (wrapper.querySelector('.password-toggle')) return;
 
     const btn = document.createElement('button');
     btn.type = 'button';
@@ -121,7 +138,8 @@ function enablePasswordToggles(form) {
       `;
     });
 
-    field.appendChild(btn);
+    wrapper.appendChild(btn);
+    console.log('enablePasswordToggles: added toggle for', input);
   });
 }
 
