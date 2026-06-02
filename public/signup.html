@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account · BCST</title>
+  <link rel="icon" href="../assets/images/LOGO.png" type="image/png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="auth-page">
+  <div class="auth-page__bg" aria-hidden="true"></div>
+  <div class="auth-page__wrapper">
+    <header class="auth-brand">
+      <img src="../assets/images/LOGO.png" alt="" class="auth-brand__logo" width="72" height="72">
+      <div>
+        <p class="auth-brand__eyebrow">Bohol College of Science &amp; Technology</p>
+        <h1 class="auth-brand__title">Create account</h1>
+        <p class="auth-brand__subtitle">Register as a BCST student</p>
+      </div>
+    </header>
+    <main class="auth-card">
+      <div id="flash"></div>
+      <form id="signup-form" class="form-stack">
+        <div class="form-field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+        </div>
+        <div class="form-field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" required>
+        </div>
+        <div class="form-field">
+          <label for="confirm_password">Confirm password</label>
+          <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Create account</button>
+        <p class="form-footer">Already registered? <a href="login.html">Sign in</a></p>
+      </form>
+    </main>
+    <footer class="auth-footer"><small>&copy; 2026 BCST Inc. All rights reserved.</small></footer>
+  </div>
+
+  <script type="module">
+    import { initSignUp } from '../assets/js/auth-ui.js';
+    initSignUp({ formId: 'signup-form', redirect: 'login.html', flashId: 'flash' });
+  </script>
+</body>
+</html>

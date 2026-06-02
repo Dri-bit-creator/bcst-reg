@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · BCST</title>
+  <link rel="icon" href="../assets/images/LOGO.png" type="image/png">
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="auth-page">
+  <div class="auth-page__bg" aria-hidden="true"></div>
+  <div class="auth-page__wrapper">
+    <header class="auth-brand">
+      <img src="../assets/images/LOGO.png" alt="" class="auth-brand__logo" width="72" height="72">
+      <div>
+        <p class="auth-brand__eyebrow">Bohol College of Science &amp; Technology</p>
+        <h1 class="auth-brand__title">Sign in</h1>
+        <p class="auth-brand__subtitle">Access your student or admin portal</p>
+      </div>
+    </header>
+    <main class="auth-card">
+      <div id="flash"></div>
+      <form id="login-form" class="form-stack">
+        <div class="form-field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="email" autocomplete="email" required>
+        </div>
+        <div class="form-field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Sign in</button>
+        <p class="form-footer">Don't have an account? <a href="signup.html">Create one</a></p>
+      </form>
+    </main>
+    <footer class="auth-footer"><small>&copy; 2026 BCST Inc. All rights reserved.</small></footer>
+  </div>
+
+  <script type="module">
+    import { initAuthUI } from '../assets/js/auth-ui.js';
+    initAuthUI({
+      formId: 'login-form',
+      redirectOnAdmin: '../admin/dashboard.html',
+      redirectOnUser: 'userdash.html',
+      flashId: 'flash'
+    });
+  </script>
+</body>
+</html>

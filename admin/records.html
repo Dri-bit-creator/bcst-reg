@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Student records · BCST</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__brand">
+      <img src="../assets/images/LOGO.png" alt="" class="sidebar__logo" width="40" height="40">
+      <div>
+        <span class="sidebar__name">BCST</span>
+        <span class="sidebar__role">Admin</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <ul>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="records.html" class="nav-link nav-link--active">Student Records</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar__footer">
+      <p class="sidebar__user" id="sidebar-user-email">admin</p>
+      <a href="../public/logout.html" class="nav-link nav-link--logout">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell__main">
+    <header class="topbar">
+      <button type="button" class="topbar__menu" id="sidebar-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar__titles"><h1 class="topbar__title">Student records</h1></div>
+    </header>
+    <main class="page-content" id="main-content">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <div>
+            <h2>Enrollment records</h2>
+            <p style="font-size:0.875rem;color:var(--color-slate-500);margin-top:0.25rem;" id="record-count">0 student(s)</p>
+          </div>
+          <form id="search-form" class="search-form">
+            <input type="search" id="search-input" placeholder="Search name, section, semester…" aria-label="Search records">
+            <button type="submit" class="btn btn--primary btn--sm">Search</button>
+          </form>
+        </div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Year</th>
+                <th>Section</th>
+                <th>Semester</th>
+                <th>Contact</th>
+                <th>Cashier</th>
+                <th>Clearance</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="records-body">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <footer class="page-footer"><small>&copy; 2026 BCST Inc.</small></footer>
+  </div>
+
+  <script src="../assets/js/app.js" defer></script>
+  <script type="module">
+    import { requireAuth } from '../assets/js/auth-ui.js';
+    import { db, collection, getDocs } from '../assets/js/firebase.js';
+
+    let enrollments = [];
+
+    function renderTable(items) {
+      const tbody = document.getElementById('records-body');
+      tbody.innerHTML = '';
+      if (items.length === 0) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="9" style="text-align:center;padding:2rem;color:var(--color-slate-500);">No records found.</td>';
+        tbody.appendChild(tr);
+        return;
+      }
+      for (const s of items) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${s.last_name}, ${s.given_name}</strong>${s.middle_name ? '<br><span style="color:var(--color-slate-500);font-size:0.8125rem;">'+s.middle_name+'</span>' : ''}</td>
+          <td>${s.student_type || ''}</td>
+          <td>${s.year_level || ''}</td>
+          <td>${s.section || ''}</td>
+          <td>${s.semester || ''}</td>
+          <td>${s.contact_number || ''}</td>
+          <td>${s.cashier_status || 'Not Paid'}</td>
+          <td>${s.clearance_status || 'Not Cleared'}</td>
+          <td><a href="editrecords.html?id=${encodeURIComponent(s._id)}" class="btn btn--secondary btn--sm">Edit</a></td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    requireAuth({ requireAdmin: true, redirectTo: '../public/login.html', onAuthorized: async (user) => {
+      document.getElementById('sidebar-user-email').textContent = user.email;
+      const snap = await getDocs(collection(db, 'enrollment'));
+      enrollments = snap.docs.map(d => ({ _id: d.id, ...d.data() }));
+      document.getElementById('record-count').textContent = `${enrollments.length} student(s)`;
+      renderTable(enrollments);
+    }});
+
+    document.getElementById('search-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const q = (document.getElementById('search-input').value || '').toLowerCase();
+      if (!q) return renderTable(enrollments);
+      const filtered = enrollments.filter(r => {
+        return (r.last_name||'').toLowerCase().includes(q) || (r.given_name||'').toLowerCase().includes(q) || (r.student_type||'').toLowerCase().includes(q) || (r.section||'').toLowerCase().includes(q) || (r.semester||'').toLowerCase().includes(q);
+      });
+      renderTable(filtered);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Edit enrollment · BCST</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="app-shell">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__brand">
+      <img src="../assets/images/LOGO.png" alt="" class="sidebar__logo" width="40" height="40">
+      <div>
+        <span class="sidebar__name">BCST</span>
+        <span class="sidebar__role">Admin</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <ul>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="records.html" class="nav-link nav-link--active">Student Records</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar__footer">
+      <p class="sidebar__user" id="sidebar-user-email">admin</p>
+      <a href="../public/logout.html" class="nav-link nav-link--logout">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell__main">
+    <header class="topbar">
+      <button type="button" class="topbar__menu" id="sidebar-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar__titles"><h1 class="topbar__title">Edit enrollment</h1></div>
+    </header>
+    <main class="page-content" id="main-content">
+      <div id="flash"></div>
+      <div class="page-intro"><p id="record-title">Updating record</p></div>
+
+      <div class="card">
+        <form id="edit-form">
+          <p class="section-title">Academic information</p>
+          <div class="form-grid form-grid--3">
+            <div class="form-field"><label for="student_type">Student type</label><input type="text" id="student_type" name="student_type" required></div>
+            <div class="form-field"><label for="year_level">Year level</label><input type="text" id="year_level" name="year_level" required></div>
+            <div class="form-field"><label for="section">Section</label><input type="text" id="section" name="section" required></div>
+            <div class="form-field"><label for="semester">Semester</label><input type="text" id="semester" name="semester" required></div>
+          </div>
+
+          <p class="section-title">Personal information</p>
+          <div class="form-grid form-grid--3">
+            <div class="form-field"><label for="last_name">Last name</label><input type="text" id="last_name" name="last_name" required></div>
+            <div class="form-field"><label for="given_name">Given name</label><input type="text" id="given_name" name="given_name" required></div>
+            <div class="form-field"><label for="middle_name">Middle name</label><input type="text" id="middle_name" name="middle_name"></div>
+            <div class="form-field"><label for="gender">Gender</label><input type="text" id="gender" name="gender" required></div>
+            <div class="form-field"><label for="civil_status">Civil status</label><input type="text" id="civil_status" name="civil_status" required></div>
+            <div class="form-field"><label for="dob">Date of birth</label><input type="date" id="dob" name="dob" required></div>
+            <div class="form-field"><label for="pob">Place of birth</label><input type="text" id="pob" name="pob" required></div>
+            <div class="form-field"><label for="contact_number">Contact number</label><input type="text" id="contact_number" name="contact_number" required></div>
+            <div class="form-field"><label for="religion">Religion</label><input type="text" id="religion" name="religion" required></div>
+            <div class="form-field form-field--full"><label for="address">Address</label><textarea id="address" name="address" required></textarea></div>
+          </div>
+
+          <p class="section-title">Family &amp; status</p>
+          <div class="form-grid form-grid--3">
+            <div class="form-field"><label for="fathers_name">Father's name</label><input type="text" id="fathers_name" name="fathers_name" required></div>
+            <div class="form-field"><label for="mothers_name">Mother's name</label><input type="text" id="mothers_name" name="mothers_name" required></div>
+            <div class="form-field"><label for="parents_contact">Parents contact</label><input type="text" id="parents_contact" name="parents_contact" required></div>
+            <div class="form-field"><label for="cashier_status">Cashier status</label>
+              <select id="cashier_status" name="cashier_status" required>
+                <option value="Paid">Paid</option>
+                <option value="Not Paid">Not Paid</option>
+                <option value="Incomplete">Incomplete</option>
+              </select>
+            </div>
+            <div class="form-field"><label for="clearance_status">Clearance status</label>
+              <select id="clearance_status" name="clearance_status" required>
+                <option value="Cleared">Cleared</option>
+                <option value="Not Cleared">Not Cleared</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top:1.5rem;">
+            <button type="submit" class="btn btn--primary">Save changes</button>
+            <a href="records.html" class="btn btn--secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </main>
+    <footer class="page-footer"><small>&copy; 2026 BCST Inc.</small></footer>
+  </div>
+
+  <script src="../assets/js/app.js" defer></script>
+  <script type="module">
+    import { requireAuth } from '../assets/js/auth-ui.js';
+    import { db, doc, getDoc, updateDoc } from '../assets/js/firebase.js';
+
+    function showFlash(msg, type = 'info') {
+      const el = document.getElementById('flash');
+      el.innerHTML = `<div class="alert alert--${type}" role="alert">${msg}</div>`;
+      setTimeout(() => el.innerHTML = '', 4000);
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    if (!id) {
+      window.location.href = 'records.html';
+    }
+
+    requireAuth({ requireAdmin: true, redirectTo: '../public/login.html', onAuthorized: async (user) => {
+      document.getElementById('sidebar-user-email').textContent = user.email;
+      const ref = doc(db, 'enrollment', id);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) { showFlash('Record not found.', 'error'); return; }
+      const s = snap.data();
+      document.getElementById('record-title').textContent = `Updating record #${id} — ${s.last_name}, ${s.given_name}`;
+      for (const k of Object.keys(s)) {
+        const el = document.getElementById(k);
+        if (el) el.value = s[k];
+      }
+
+      document.getElementById('edit-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const updates = {};
+        const fields = ['student_type','year_level','section','semester','last_name','given_name','middle_name','gender','civil_status','dob','pob','contact_number','fathers_name','mothers_name','parents_contact','address','religion','cashier_status','clearance_status'];
+        for (const f of fields) updates[f] = (document.getElementById(f)?.value || '').trim();
+        try {
+          await updateDoc(ref, updates);
+          showFlash('Record updated successfully.', 'success');
+          setTimeout(() => window.location.href = 'records.html', 1000);
+        } catch (err) {
+          showFlash('Failed to update record: ' + (err.message || err), 'error');
+        }
+      });
+    }});
+  </script>
+</body>
+</html>

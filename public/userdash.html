@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home · BCST</title>
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body class="app-shell">
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="sidebar__brand">
+      <img src="../assets/images/LOGO.png" alt="" class="sidebar__logo" width="40" height="40">
+      <div>
+        <span class="sidebar__name">BCST</span>
+        <span class="sidebar__role">Student</span>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <ul>
+        <li><a href="userdash.html" class="nav-link nav-link--active">Home</a></li>
+        <li><a href="enrollment.html" class="nav-link">Enrollment</a></li>
+      </ul>
+    </nav>
+    <div class="sidebar__footer">
+      <p class="sidebar__user" id="sidebar-user-email">User</p>
+      <a href="logout.html" class="nav-link nav-link--logout">Sign out</a>
+    </div>
+  </aside>
+  <div class="app-shell__main">
+    <header class="topbar">
+      <button type="button" class="topbar__menu" id="sidebar-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="sidebar">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="topbar__titles">
+        <h1 class="topbar__title">Home</h1>
+      </div>
+    </header>
+    <main class="page-content" id="main-content">
+      <div class="page-intro">
+        <p>Welcome to the BCST student portal. Submit enrollment or browse school information below.</p>
+      </div>
+
+      <div class="card-grid">
+        <article class="card">
+          <h2 class="card__title">Enrollment</h2>
+          <p class="card__text">Complete the enrollment form with your personal and academic details for the current term.</p>
+          <p style="margin-top:1rem;"><a href="enrollment.html" class="btn btn--primary">Start enrollment</a></p>
+        </article>
+        <article class="card">
+          <h2 class="card__title">About our school</h2>
+          <p class="card__text">We foster a nurturing environment where faculty support students in reaching academic and personal goals.</p>
+        </article>
+        <article class="card">
+          <h2 class="card__title">Programs offered</h2>
+          <p class="card__text">Computer Science, Information Technology, Business Administration, and Engineering — designed for career readiness.</p>
+        </article>
+        <article class="card">
+          <h2 class="card__title">Need help?</h2>
+          <p class="card__text">Email info@bcst.edu.ph or call (123) 456-7890 for assistance with enrollment.</p>
+        </article>
+      </div>
+    </main>
+    <footer class="page-footer"><small>&copy; 2026 BCST Inc.</small></footer>
+  </div>
+
+  <script src="../assets/js/app.js" defer></script>
+  <script type="module">
+    import { requireAuth } from '../assets/js/auth-ui.js';
+    requireAuth({ requireAdmin: false, redirectTo: 'login.html', onAuthorized: (user, data) => {
+      document.getElementById('sidebar-user-email').textContent = data?.email || user.email;
+    }});
+  </script>
+</body>
+</html>
