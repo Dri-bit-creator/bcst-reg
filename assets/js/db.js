@@ -1,7 +1,8 @@
-import { db, addDoc, collection, serverTimestamp } from './firebase.js';
+import { firebaseReady, db, addDoc, collection, serverTimestamp } from './firebase.js';
 
 export async function createEnrollment(enrollmentData) {
   if (!enrollmentData) throw new Error('enrollmentData required');
+  await firebaseReady;
   const docRef = await addDoc(collection(db, 'enrollment'), {
     ...enrollmentData,
     created_at: serverTimestamp()
@@ -11,6 +12,7 @@ export async function createEnrollment(enrollmentData) {
 
 export async function createStudent(studentData) {
   if (!studentData) throw new Error('studentData required');
+  await firebaseReady;
   const docRef = await addDoc(collection(db, 'students'), {
     ...studentData,
     enrollment_date: studentData.enrollment_date || serverTimestamp()

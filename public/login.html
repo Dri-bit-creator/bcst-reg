@@ -36,60 +36,7 @@
     <footer class="auth-footer"><small>&copy; 2026 BCST Inc. All rights reserved.</small></footer>
   </div>
 
-    <script>
-      (function(){
-        const form = document.getElementById('login-form');
-        if (!form) return;
-        const pwInputs = form.querySelectorAll('input[type="password"]');
-        pwInputs.forEach((pw) => {
-          const field = pw.closest('.form-field') || pw.parentElement;
-          if (!field) return;
-          field.classList.add('has-toggle');
-
-          if (!(pw.parentElement && pw.parentElement.classList && pw.parentElement.classList.contains('input-with-toggle'))) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'input-with-toggle';
-            pw.parentNode.insertBefore(wrapper, pw);
-            wrapper.appendChild(pw);
-          }
-
-          const wrapper = pw.parentElement;
-          if (wrapper.querySelector('.password-toggle')) return;
-
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'password-toggle';
-          btn.setAttribute('aria-label', 'Show password');
-          btn.innerHTML = `
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          `;
-
-          btn.addEventListener('click', () => {
-            const isPassword = pw.type === 'password';
-            pw.type = isPassword ? 'text' : 'password';
-            btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
-            btn.innerHTML = isPassword ? `
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M10.58 10.58A3 3 0 0113.42 13.42" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2.5 12s3.5-6.5 9.5-6.5c2.02 0 3.9.5 5.42 1.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M21.5 12s-1.86 3.45-5.1 4.9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            ` : `
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M2.5 12s3.5-6.5 9.5-6.5S21.5 12 21.5 12s-3.5 6.5-9.5 6.5S2.5 12 2.5 12z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            `;
-          });
-
-          wrapper.appendChild(btn);
-        });
-      })();
-    </script>
+    <!-- Inline toggle removed to avoid duplicate toggles; initAuthUI provides the toggle -->
 
     <script type="module">
       import { initAuthUI } from '../assets/js/auth-ui.js';
