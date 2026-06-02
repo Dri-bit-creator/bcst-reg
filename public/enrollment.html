@@ -81,7 +81,7 @@
   <script src="../assets/js/app.js" defer></script>
   <script type="module">
     import { requireAuth } from '../assets/js/auth-ui.js';
-    import { db, collection, addDoc } from '../assets/js/firebase.js';
+    import { db, collection, addDoc, getDocs, query, where } from '../assets/js/firebase.js';
 
     function showFlash(msg, type = 'info') {
       const el = document.getElementById('flash');
@@ -91,9 +91,30 @@
 
     // Track current signed-in user so we can attach owner UID to enrollment records
     let currentUser = null;
-    requireAuth({ requireAdmin: false, redirectTo: 'login.html', onAuthorized: (user, userData) => {
+
+    async function hasSubmittedEnrollment(uid) {
+      if (!uid) return false;
+      const q = query(collection(db, 'enrollment'), where('owner', '==', uid));
+      const snap = await getDocs(q);
+      return snap.size > 0;
+    }
+
+    requireAuth({ requireAdmin: false, redirectTo: 'login.html', onAuthorized: async (user, userData) => {
       currentUser = user;
       document.getElementById('sidebar-user-email').textContent = userData?.email || user.email;
+      try {
+        const already = await hasSubmittedEnrollment(currentUser.uid);
+        if (already) {
+          showFlash('You have submitted your enrollment.', 'info');
+          const submitBtn = document.querySelector('#enrollment-form .form-actions button[type="submit"]') || document.querySelector('#enrollment-form button[type="submit"]');
+          if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enrollment submitted';
+          }
+        }
+      } catch (err) {
+        console.warn('Error checking existing enrollment:', err);
+      }
     }});
 
     const form = document.getElementById('enrollment-form');
@@ -116,8 +137,15 @@
       data.created_at = new Date().toISOString();
 
       try {
+        // Prevent duplicate submissions by checking again on submit
+        const already = await hasSubmittedEnrollment(currentUser.uid);
+        if (already) { showFlash('You have submitted your enrollment.', 'info'); return; }
+
         await addDoc(collection(db, 'enrollment'), data);
         showFlash('Enrollment submitted successfully.', 'success');
+        // Disable form after successful submission
+        const submitBtn = document.querySelector('#enrollment-form .form-actions button[type="submit"]') || document.querySelector('#enrollment-form button[type="submit"]');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Enrollment submitted'; }
         form.reset();
       } catch (err) {
         showFlash('Database error: ' + (err.message || err), 'error');

@@ -21,6 +21,9 @@ export let orderBy = null;
 export let serverTimestamp = null;
 export let GoogleAuthProvider = null;
 export let signInWithPopup = null;
+export let updatePassword = null;
+export let reauthenticateWithCredential = null;
+export let EmailAuthProvider = null;
 
 // Promise that resolves when Firebase SDK is loaded and initialized.
 export const firebaseReady = (async function loadFirebase() {
@@ -83,7 +86,10 @@ export const firebaseReady = (async function loadFirebase() {
 		onAuthStateChanged: _onAuthStateChanged,
 		sendPasswordResetEmail: _sendPasswordResetEmail,
 		GoogleAuthProvider: _GoogleAuthProvider,
-		signInWithPopup: _signInWithPopup
+		signInWithPopup: _signInWithPopup,
+		updatePassword: _updatePassword,
+		reauthenticateWithCredential: _reauthenticateWithCredential,
+		EmailAuthProvider: _EmailAuthProvider
 	} = authModule;
 	const {
 		getFirestore,
@@ -112,6 +118,9 @@ export const firebaseReady = (async function loadFirebase() {
 	sendPasswordResetEmail = _sendPasswordResetEmail;
 	GoogleAuthProvider = _GoogleAuthProvider;
 	signInWithPopup = _signInWithPopup;
+	updatePassword = _updatePassword;
+	reauthenticateWithCredential = _reauthenticateWithCredential;
+	EmailAuthProvider = _EmailAuthProvider;
 	doc = _doc;
 	setDoc = _setDoc;
 	getDoc = _getDoc;

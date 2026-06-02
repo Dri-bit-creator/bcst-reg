@@ -19,6 +19,7 @@
       <ul>
         <li><a href="dashboard.html" class="nav-link nav-link--active">Dashboard</a></li>
         <li><a href="records.html" class="nav-link">Student Records</a></li>
+        <li><a href="change_password.html" class="nav-link" data-protected="true">Change password</a></li>
       </ul>
     </nav>
     <div class="sidebar__footer">
@@ -57,6 +58,22 @@
       const stats = document.getElementById('stats');
       stats.appendChild(card('Enrollment records', `${enrollSnap.size} student(s)`));
     }});
+
+    // Force protected links to open in the same tab even when modified clicks occur
+    document.querySelectorAll('a[data-protected]').forEach((a) => {
+      a.addEventListener('click', (ev) => {
+        if (ev.ctrlKey || ev.metaKey) {
+          ev.preventDefault();
+          window.location.href = a.href;
+        }
+      });
+      a.addEventListener('auxclick', (ev) => {
+        if (ev.button === 1) {
+          ev.preventDefault();
+          window.location.href = a.href;
+        }
+      });
+    });
   </script>
 </body>
 </html>
