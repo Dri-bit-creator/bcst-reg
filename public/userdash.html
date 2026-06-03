@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Home · BCST</title>
-  <link rel="stylesheet" href="../assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body class="app-shell">
   <a class="skip-link" href="#main-content">Skip to content</a>
   <aside class="sidebar" id="sidebar" aria-label="Main navigation">
     <div class="sidebar__brand">
-      <img src="../assets/images/LOGO.png" alt="" class="sidebar__logo" width="40" height="40">
+      <img src="assets/images/LOGO.png" alt="" class="sidebar__logo" width="40" height="40">
       <div>
         <span class="sidebar__name">BCST</span>
         <span class="sidebar__role">Student</span>
@@ -64,9 +64,9 @@
     <footer class="page-footer"><small>&copy; 2026 BCST Inc.</small></footer>
   </div>
 
-  <script src="../assets/js/app.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
   <script type="module">
-    import { requireAuth } from '../assets/js/auth-ui.js';
+    import { requireAuth } from './assets/js/auth-ui.js';
     requireAuth({ requireAdmin: false, redirectTo: 'login.html', onAuthorized: (user, data) => {
       document.getElementById('sidebar-user-email').textContent = data?.email || user.email;
     }});

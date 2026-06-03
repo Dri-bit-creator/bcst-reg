@@ -7,7 +7,7 @@ function showFlashById(id, message, type = 'info') {
   setTimeout(() => { el.innerHTML = ''; }, 4000);
 }
 
-export function initAuthUI({ formId, redirectOnAdmin = '../admin/dashboard.html', redirectOnUser = 'userdash.html', flashId = 'flash' } = {}) {
+export function initAuthUI({ formId, redirectOnAdmin = 'admin/dashboard.html', redirectOnUser = 'userdash.html', flashId = 'flash' } = {}) {
   const form = document.getElementById(formId);
   if (!form) return;
   enablePasswordToggles(form);
@@ -107,7 +107,7 @@ export function initSignUp({ formId, redirect = 'login.html', flashId = 'flash' 
           }
           const finalDoc = await getDoc(doc(db, 'users', user.uid));
           const role = finalDoc.exists() ? (finalDoc.data().role || 'user') : 'user';
-          if (role === 'admin') window.location.href = '../admin/dashboard.html';
+          if (role === 'admin') window.location.href = 'admin/dashboard.html';
           else window.location.href = 'userdash.html';
         } catch (err) {
           console.error('Google sign-in error:', err);
@@ -255,7 +255,7 @@ function enablePasswordToggles(form) {
   });
 }
 
-export function requireAuth({ requireAdmin = false, redirectTo = '../public/login.html', onAuthorized } = {}) {
+export function requireAuth({ requireAdmin = false, redirectTo = 'login.html', onAuthorized } = {}) {
   firebaseReady.then(() => {
     onAuthStateChanged(auth, async (user) => {
       if (!user) { window.location.href = redirectTo; return; }

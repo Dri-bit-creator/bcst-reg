@@ -23,7 +23,7 @@
     </nav>
     <div class="sidebar__footer">
       <p class="sidebar__user" id="sidebar-user-email">admin</p>
-      <a href="../public/logout.html" class="nav-link nav-link--logout">Sign out</a>
+      <a href="../logout.html" class="nav-link nav-link--logout">Sign out</a>
     </div>
   </aside>
   <div class="app-shell__main">
@@ -108,7 +108,7 @@
       window.location.href = 'records.html';
     }
 
-    requireAuth({ requireAdmin: true, redirectTo: '../public/login.html', onAuthorized: async (user) => {
+    requireAuth({ requireAdmin: true, redirectTo: '../login.html', onAuthorized: async (user) => {
       document.getElementById('sidebar-user-email').textContent = user.email;
       const ref = doc(db, 'enrollment', id);
       const snap = await getDoc(ref);
